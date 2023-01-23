@@ -706,7 +706,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab75d31e649a1c94182a20e2d7e7ca9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cubeChangePlaceSpeed: 1
   cubeToPlace: {fileID: 759186138}
   cubeToCreate: {fileID: 659165341285220060, guid: f33fe092d6ea3c243ba360a8cbaa688d, type: 3}
   allCubes: {fileID: 109988533}
@@ -714,6 +713,11 @@ MonoBehaviour:
   - {fileID: 980149917}
   - {fileID: 2106763489}
   - {fileID: 237321402}
+  bgColors:
+  - {r: 0.75489753, g: 0.8962264, b: 0.62144, a: 1}
+  - {r: 0.8773585, g: 0.8508573, b: 0.6497419, a: 1}
+  - {r: 0.8962264, g: 0.765384, b: 0.629895, a: 1}
+  cubeChangePlaceSpeed: 1
 --- !u!4 &905350912
 Transform:
   m_ObjectHideFlags: 0
@@ -807,7 +811,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.14442755, y: -0, z: -0, w: 0.9895154}
-  m_LocalPosition: {x: 0, y: 3.929, z: -8.811}
+  m_LocalPosition: {x: 0, y: 3.9, z: -8.811}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1405,7 +1409,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 49.199997, y: -69.5}
+  m_AnchoredPosition: {x: 49.19998, y: -69.5}
   m_SizeDelta: {x: 103.4, y: 121}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2072296482

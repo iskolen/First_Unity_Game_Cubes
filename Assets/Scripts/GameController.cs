@@ -6,14 +6,20 @@ using UnityEngine.EventSystems;
 
 public class GameController : MonoBehaviour
 {
-    private CubePosition nowCube = new CubePosition(0, 1, 0);
-    public float cubeChangePlaceSpeed = 1f;
     public Transform cubeToPlace;
     public GameObject cubeToCreate, allCubes;
     public GameObject[] canvasStartPage;
+    public Color[] bgColors;
+    public float cubeChangePlaceSpeed = 1f;
+    private CubePosition nowCube = new CubePosition(0, 1, 0);
+    private Transform mainCam;
     private Rigidbody allCubesRb;
-    private bool isLose, firstCube;
     private Coroutine showCubePlace;
+    private Color toCameraColor;
+    private bool isLose, firstCube;
+    private float camMoveToZPosition = 2f, camMoveToYPosition, camMoveSpeed = 2f, camChangeColorSpeed = 1.5f;
+    private int prevCountMaxHorizontal;
+
 
     private List<Vector3> allCubesPositions = new List<Vector3>
     {
@@ -31,13 +37,17 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        toCameraColor = Camera.main.backgroundColor;
+        mainCam = Camera.main.transform;
+        camMoveToYPosition = 3.9f + nowCube.y - 1f;
+
         allCubesRb = allCubes.GetComponent<Rigidbody>();
         showCubePlace = StartCoroutine(ShowCubePlace());
     }
 
     private void Update()
     {
-        if((Input.GetMouseButtonDown(0) || Input.touchCount > 0) && cubeToPlace != null && !EventSystem.current.IsPointerOverGameObject())
+        if((Input.GetMouseButtonDown(0) || Input.touchCount > 0) && allCubes != null && cubeToPlace != null && !EventSystem.current.IsPointerOverGameObject())
         {
 #if !UNITY_EDITOR
                 if(Input.GetTouch(0).phase != TouchPhase.Began)
@@ -55,6 +65,7 @@ public class GameController : MonoBehaviour
                 cubeToCreate,
                 cubeToPlace.position,
                 Quaternion.identity);
+
             newCube.transform.SetParent(allCubes.transform);
             nowCube.setVector(cubeToPlace.position);
             allCubesPositions.Add(nowCube.getVector());
@@ -62,6 +73,7 @@ public class GameController : MonoBehaviour
             allCubesRb.isKinematic = true;
             allCubesRb.isKinematic = false;
             SpawnPositions();
+            MoveCameraChangeBg();
         }
 
         if(!isLose && allCubesRb.velocity.magnitude > 0.1f)
@@ -70,6 +82,13 @@ public class GameController : MonoBehaviour
             isLose = true;
             StopCoroutine(showCubePlace);
         }
+
+        mainCam.localPosition = Vector3.MoveTowards(mainCam.localPosition,
+            new Vector3(mainCam.localPosition.x, camMoveToYPosition, mainCam.localPosition.z),
+            camMoveSpeed * Time.deltaTime);
+
+        if (Camera.main.backgroundColor != toCameraColor)
+            Camera.main.backgroundColor = Color.Lerp(Camera.main.backgroundColor, toCameraColor, Time.deltaTime/camChangeColorSpeed);
     }
 
     IEnumerator ShowCubePlace()
@@ -104,7 +123,12 @@ public class GameController : MonoBehaviour
             && nowCube.z - 1 != cubeToPlace.position.z)
             positions.Add(new Vector3(nowCube.x, nowCube.y, nowCube.z - 1));
 
-        cubeToPlace.position = positions[UnityEngine.Random.RandomRange(0, positions.Count)];
+        if (positions.Count > 1)
+            cubeToPlace.position = positions[UnityEngine.Random.RandomRange(0, positions.Count)];
+        else if (positions.Count == 0)
+            isLose = true;
+        else
+            cubeToPlace.position = positions[0];
     }
 
     private bool IsPositionEmpty(Vector3 targetPosition)
@@ -118,6 +142,36 @@ public class GameController : MonoBehaviour
                 return false;
         }
         return true;
+    }
+
+    private void MoveCameraChangeBg()
+    {
+        int maxX = 0, maxY = 0, maxZ = 0, maxHorizontal;
+        foreach(Vector3 position in allCubesPositions)
+        {
+            if (Mathf.Abs(Convert.ToInt32(position.x)) > maxX)
+                maxX = Convert.ToInt32(position.x);
+            if (Convert.ToInt32(position.y) > maxY)
+                maxY = Convert.ToInt32(position.y);
+            if (Mathf.Abs(Convert.ToInt32(position.z)) > maxZ)
+                maxZ = Convert.ToInt32(position.z);
+        }
+
+        camMoveToYPosition = 3.9f + nowCube.y - 1f;
+
+        maxHorizontal = maxX > maxZ ? maxX : maxZ;
+        if(maxHorizontal % 3 == 0 && prevCountMaxHorizontal != maxHorizontal)
+        {
+            mainCam.localPosition -= new Vector3(0, 0, camMoveToZPosition);
+            prevCountMaxHorizontal = maxHorizontal;
+        }
+
+        if (maxY >= 25)
+            toCameraColor = bgColors[2];
+        else if (maxY >= 15)
+            toCameraColor = bgColors[1];
+        else if (maxY >= 5)
+            toCameraColor = bgColors[0];
     }
 }
 
