@@ -7,4 +7,9 @@ public class CanvasButtons : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
+    public void LoadGitHub()
+    {
+        Application.OpenURL("https://github.com/iskolen");
+    }
 }
