@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class GameController : MonoBehaviour
 {
     public Transform cubeToPlace;
-    public GameObject cubeToCreate, allCubes;
+    public GameObject cubeToCreate, allCubes, vfxSpawnCube;
     public GameObject[] canvasStartPage;
     public Color[] bgColors;
     public float cubeChangePlaceSpeed = 1f;
@@ -53,8 +53,9 @@ public class GameController : MonoBehaviour
                 if(Input.GetTouch(0).phase != TouchPhase.Began)
                     return;
 #endif
-
-            if(!firstCube)
+            if (PlayerPrefs.GetString("music") != "No")
+                GetComponent<AudioSource>().Play();
+            if (!firstCube)
             {
                 firstCube = true;
                 foreach (GameObject obj in canvasStartPage)
@@ -69,6 +70,12 @@ public class GameController : MonoBehaviour
             newCube.transform.SetParent(allCubes.transform);
             nowCube.setVector(cubeToPlace.position);
             allCubesPositions.Add(nowCube.getVector());
+
+            GameObject newVfx = Instantiate(
+                vfxSpawnCube,
+                newCube.transform.position,
+                Quaternion.identity);
+            Destroy(newVfx, 1.5f);
 
             allCubesRb.isKinematic = true;
             allCubesRb.isKinematic = false;
